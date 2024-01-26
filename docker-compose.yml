@@ -16,6 +16,11 @@ services:
       - .env-non-dev
     container_name: fastapi_app
     ports:
-      - "9000:8000"
+      - "8000:8000"
     depends_on:
       - db
+
+  test: 
+    build: 
+      context: .
+    command: pytest test/

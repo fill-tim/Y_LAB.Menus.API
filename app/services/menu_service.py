@@ -47,7 +47,18 @@ class MenuService:
         return await self._menu_repo.create(menu_in)
 
     async def delete_menu(self, id: UUID):
-        return await self._menu_repo.delete(id)
+        response = await self._menu_repo.delete(id)
+        
+        if response.rowcount == 0:
+            return JSONResponse(
+                status_code=404,
+                content={"detail": "menu not found"},
+            )
+
+        return {
+            "status": True, 
+            "message": "The menu has been deleted"
+        }
 
     async def update_menu(self, menu_upd: MenuUpdate, id: UUID):
         menu_upd = await self._menu_repo.update(menu_upd, id)

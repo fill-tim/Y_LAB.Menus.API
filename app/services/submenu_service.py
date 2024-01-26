@@ -47,7 +47,15 @@ class SubmenuService:
         return await self._submenu_repo.create(submenu_in, menus_id)
 
     async def delete_submenu(self, id: UUID):
-        return await self._submenu_repo.delete(id)
+        response = await self._submenu_repo.delete(id)
+
+        if response.rowcount == 0:
+            return JSONResponse(
+                status_code=404,
+                content={"detail": "submenu not found"},
+            )
+
+        return {"status": True, "message": "The submenu has been deleted"}
 
     async def update_submenu(self, sub_menu_upd: SubmenuUpdate, id: UUID):
         submenu_upd = await self._submenu_repo.update(sub_menu_upd, id)

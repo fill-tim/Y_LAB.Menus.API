@@ -25,12 +25,19 @@ class DishService:
         return await self._dish_repo.get_all()
 
     async def create_dish(self, dish_in: DishAdd, submenu_id: UUID):
-        
         dish = await self._dish_repo.create(dish_in, submenu_id)
         return dish
 
     async def delete_dish(self, id: UUID):
-        return await self._dish_repo.delete(id)
+        response = await self._dish_repo.delete(id)
+
+        if response.rowcount == 0:
+            return JSONResponse(
+                status_code=404,
+                content={"detail": "dish not found"},
+            )
+
+        return {"status": True, "message": "The dish has been deleted"}
 
     async def update_dish(self, dish_upd: DishUpdate, id: UUID):
         dish_upd = await self._dish_repo.update(dish_upd, id)

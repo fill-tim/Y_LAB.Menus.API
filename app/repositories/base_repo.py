@@ -11,6 +11,7 @@ class BaseRepo:
         try:
             obj = await self.db.execute(select(self.model).filter_by(id=id))
             return obj.scalar()
+
         except Exception as error:
             return error
 
@@ -41,6 +42,7 @@ class BaseRepo:
                 .values(obj_upd.model_dump(exclude_unset=True))
             )
             await self.db.commit()
+
             return updated_obj
         except Exception as error:
             return error
@@ -49,6 +51,7 @@ class BaseRepo:
         try:
             deleted_obj = await self.db.execute(delete(self.model).filter_by(id=id))
             await self.db.commit()
+
             return deleted_obj
         except Exception as error:
             return error
