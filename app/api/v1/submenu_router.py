@@ -16,9 +16,10 @@ submenu_router = APIRouter(prefix="/api/v1/menus/{menus_id}", tags=["submenus"])
 
 @submenu_router.get("/submenus")
 async def list(
+    menus_id: UUID,
     submenu_service: SubmenuService = Depends(),
 ):
-    return await submenu_service.get_all_submenus()
+    return await submenu_service.get_all_submenus(menus_id)
 
 
 @submenu_router.get("/submenus/{id}", response_model=SubmenuResponse)

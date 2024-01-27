@@ -18,9 +18,10 @@ dish_router = APIRouter(
 
 @dish_router.get("/dishes")
 async def list(
+    submenu_id: UUID,
     dish_service: DishService = Depends(),
 ):
-    return await dish_service.get_all_dishes()
+    return await dish_service.get_all_dishes(submenu_id)
 
 
 @dish_router.get("/dishes/{id}", response_model=DishResponse)
