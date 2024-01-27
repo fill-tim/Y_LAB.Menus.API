@@ -13,11 +13,11 @@ class DishRepo(BaseRepo):
         super().__init__(model=Dish, db=db)
 
     async def get_all(self, submenu_id: UUID):
-        try:
-            dishes = await self.db.execute(select(Dish).where(submenu_id=submenu_id))
-            return list(dishes.scalars())
-        except Exception as error:
-            return error
+        dishes = await self.db.execute(
+            select(Dish).where(Dish.submenu_id == submenu_id)
+        )
+
+        return list(dishes.scalars())
 
     async def create(self, dish_in: DishAdd, submenu_id: UUID):
         price = round(float(dish_in.price), 2)

@@ -28,7 +28,15 @@ class DishService:
             )
 
     async def get_all_dishes(self, submenu_id: UUID):
-        return await self._dish_repo.get_all(submenu_id)
+        try:
+            dishes = await self._dish_repo.get_all(submenu_id)
+
+            return dishes
+        except Exception as error:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": f"{error}"},
+            )
 
     async def create_dish(self, dish_in: DishAdd, submenu_id: UUID):
         try:
