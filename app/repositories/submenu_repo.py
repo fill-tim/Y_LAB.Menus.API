@@ -39,7 +39,7 @@ class SubmenuRepo(BaseRepo):
         except Exception as error:
             return error
 
-    async def get_all(self):
+    async def get_all(self, menus_id):
         submenu = aliased(Submenu)
         dish = aliased(Dish)
 
@@ -52,6 +52,7 @@ class SubmenuRepo(BaseRepo):
             )
             .outerjoin(dish, submenu.id == dish.submenu_id)
             .group_by(submenu.id)
+            .where(submenu.menu_id == menus_id)
         )
 
         result = await self.db.execute(query)
