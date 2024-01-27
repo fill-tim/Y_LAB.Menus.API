@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi.responses import JSONResponse
-from ..schemas.dish_schemas import DishAdd, DishUpdate, DishResponse
+from ..schemas.dish_schemas import DishAdd, DishUpdate
 from ..repositories import DishRepo
 from fastapi import Depends
 
@@ -11,42 +11,68 @@ class DishService:
         self._dish_repo = dish_repo
 
     async def get_one_dish(self, id: UUID):
-        dish = await self._dish_repo.get_one(id)
+        try:
+            dish = await self._dish_repo.get_one(id)
 
-        if not dish:
+            if not dish:
+                return JSONResponse(
+                    status_code=404,
+                    content={"detail": "dish not found"},
+                )
+
+            return dish
+        except Exception as error:
             return JSONResponse(
-                status_code=404,
-                content={"detail": "dish not found"},
+                status_code=400,
+                content={"detail": f"{error}"},
             )
 
-        return dish
-
-    async def get_all_dishes(self):
-        return await self._dish_repo.get_all()
+    async def get_all_dishes(self, submenu_id: UUID):
+        return await self._dish_repo.get_all(submenu_id)
 
     async def create_dish(self, dish_in: DishAdd, submenu_id: UUID):
-        dish = await self._dish_repo.create(dish_in, submenu_id)
-        return dish
+        try:
+            dish = await self._dish_repo.create(dish_in, submenu_id)
+
+            return dish
+        except Exception as error:
+            return JSONResponse(
+                status_code=400,
+                content={"detail": f"{error}"},
+            )
 
     async def delete_dish(self, id: UUID):
-        response = await self._dish_repo.delete(id)
+        try:
+            response = await self._dish_repo.delete(id)
 
-        if response.rowcount == 0:
+            if response.rowcount == 0:
+                return JSONResponse(
+                    status_code=404,
+                    content={"detail": "dish not found"},
+                )
+
+            return {"status": True, "message": "The dish has been deleted"}
+        except Exception as error:
             return JSONResponse(
-                status_code=404,
-                content={"detail": "dish not found"},
+                status_code=400,
+                content={"detail": f"{error}"},
             )
-
-        return {"status": True, "message": "The dish has been deleted"}
 
     async def update_dish(self, dish_upd: DishUpdate, id: UUID):
-        dish_upd = await self._dish_repo.update(dish_upd, id)
+        try:
+            dish_upd = await self._dish_repo.update(dish_upd, id)
 
-        if dish_upd.rowcount == 0:
+            if dish_upd.rowcount == 0:
+                return JSONResponse(
+                    status_code=404,
+                    content={"detail": "dish not found"},
+                )
+
+            dish = await self._dish_repo.get_one(id)
+
+            return dish
+        except Exception as error:
             return JSONResponse(
-                status_code=404,
-                content={"detail": "dish not found"},
+                status_code=400,
+                content={"detail": f"{error}"},
             )
-
-        dish = await self._dish_repo.get_one(id)
-        return dish
