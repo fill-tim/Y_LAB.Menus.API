@@ -31,7 +31,19 @@ class DishService:
         try:
             dishes = await self._dish_repo.get_all(submenu_id)
 
-            return dishes
+            response = []
+
+            for dish in dishes:
+                response.append(
+                    {
+                        "id": dish.id,
+                        "title": dish.title,
+                        "description": dish.description,
+                        "price": dish.price,
+                    }
+                )
+
+            return response
         except Exception as error:
             return JSONResponse(
                 status_code=400,
