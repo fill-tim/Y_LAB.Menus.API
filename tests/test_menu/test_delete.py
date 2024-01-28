@@ -1,25 +1,26 @@
 from httpx import AsyncClient
 import pytest
-from conftest import async_session_maker
-from tests import Menu
-import uuid
+from data.data_for_test import DataForTests
+from uuid import uuid4
 
 
-@pytest.mark.asyncio(scope="session")
+@pytest.mark.asyncio
 async def test_delete_menu_success(ac: AsyncClient):
-    async with async_session_maker() as db:
-        test_menu = Menu(title="My menu 1", description="My menu description 1")
+    data = await DataForTests.init_default_data()
 
-        db.add(test_menu)
-        await db.commit()
-        await db.refresh(test_menu)
-
-    test_menu_id = test_menu.id
+    test_menu_id = data["test_menu_default"].id
 
     response = await ac.delete(f"api/v1/menus/{test_menu_id}")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "status": True,
-        "message": "The menu has been deleted"
-    }
+    assert response.json() == {"status": True, "message": "The menu has been deleted"}
+
+
+@pytest.mark.asyncio
+async def test_delete_menu_failed(ac: AsyncClient):
+    test_menu_id = uuid4()
+
+    response = await ac.delete(f"api/v1/menus/{test_menu_id}")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "menu not found"}
