@@ -54,8 +54,14 @@
 	TEST_HOST=db
 
 ## Для запуска проекта через docker-compose перейдите в директоию main и пропишите следующую команду:
-	docker-compose up --build app
+	docker-compose up -d --build app
 
 ## Для запуска тестов через docker-compose перейдите в директоию main и пропишите следующую команду:
 	docker-compose up --build tests
+
+## Для просмотра запущенных контейнеров перейдите в директоию main и пропишите следующую команду:
+	docker-compose ps
+
+## Для остановки запущенных контейнеров перейдите в директоию main и пропишите следующую команду:
+	docker-compose stop <Название SERVICE> 
 
