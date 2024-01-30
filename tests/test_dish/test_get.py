@@ -1,16 +1,14 @@
 from httpx import AsyncClient
 import pytest
-from data.data_for_test import DataForTests
 import uuid
+from data.data_for_test import init_default_data
 
 
 @pytest.mark.asyncio
-async def test_get_dish_success(ac: AsyncClient):
-    data = await DataForTests.init_default_data()
-
-    test_menu_id = data["test_menu_default"].id
-    test_submenu_id = data["test_submenu_default"].id
-    test_dish_id = data["test_dish_default"].id
+async def test_get_dish_success(ac: AsyncClient, init_default_data):
+    test_menu_id = init_default_data["test_menu_default"].id
+    test_submenu_id = init_default_data["test_submenu_default"].id
+    test_dish_id = init_default_data["test_dish_default"].id
 
     response = await ac.get(
         f"api/v1/menus/{test_menu_id}/submenus/{test_submenu_id}/dishes/{test_dish_id}",

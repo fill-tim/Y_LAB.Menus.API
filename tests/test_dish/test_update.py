@@ -1,15 +1,13 @@
 from httpx import AsyncClient
 import pytest
 import uuid
-from data.data_for_test import DataForTests
+from data.data_for_test import init_default_data
 
 
 @pytest.mark.asyncio
-async def test_update_dish_success(ac: AsyncClient):
-    data = await DataForTests.init_default_data()
-
-    test_menu_id = data["test_menu_default"].id
-    test_submenu_id = data["test_submenu_default"].id
+async def test_update_dish_success(ac: AsyncClient, init_default_data):
+    test_menu_id = init_default_data["test_menu_default"].id
+    test_submenu_id = init_default_data["test_submenu_default"].id
 
     response = await ac.patch(
         f"api/v1/menus/{test_menu_id}/submenus/{test_submenu_id}",
@@ -45,11 +43,9 @@ async def test_update_dish_failed(ac: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_update_dish_failed_title(ac: AsyncClient):
-    data = await DataForTests.init_default_data()
-
-    test_menu_id = data["test_menu_default"].id
-    test_submenu_id = data["test_submenu_default"].id
+async def test_update_dish_failed_title(ac: AsyncClient, init_default_data):
+    test_menu_id = init_default_data["test_menu_default"].id
+    test_submenu_id = init_default_data["test_submenu_default"].id
 
     response = await ac.patch(
         f"api/v1/menus/{test_menu_id}/submenus/{test_submenu_id}",
@@ -64,11 +60,9 @@ async def test_update_dish_failed_title(ac: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_update_dish_failed_description(ac: AsyncClient):
-    data = await DataForTests.init_default_data()
-
-    test_menu_id = data["test_menu_default"].id
-    test_submenu_id = data["test_submenu_default"].id
+async def test_update_dish_failed_description(ac: AsyncClient, init_default_data):
+    test_menu_id = init_default_data["test_menu_default"].id
+    test_submenu_id = init_default_data["test_submenu_default"].id
 
     response = await ac.patch(
         f"api/v1/menus/{test_menu_id}/submenus/{test_submenu_id}",

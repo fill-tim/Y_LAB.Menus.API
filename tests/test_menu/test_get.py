@@ -1,16 +1,12 @@
 from httpx import AsyncClient
 import pytest
-from conftest import async_session_maker
-from tests import Menu
 import uuid
-from data.data_for_test import DataForTests
+from data.data_for_test import init_default_data
 
 
 @pytest.mark.asyncio
-async def test_get_menu_success(ac: AsyncClient):
-    data = await DataForTests.init_default_data()
-
-    test_menu_id = data["test_menu_default"].id
+async def test_get_menu_success(ac: AsyncClient, init_default_data):
+    test_menu_id = init_default_data["test_menu_default"].id
 
     response = await ac.get(f"api/v1/menus/{test_menu_id}")
 

@@ -1,14 +1,12 @@
 from httpx import AsyncClient
 import pytest
-from data.data_for_test import DataForTests
+from data.data_for_test import init_default_data
 from uuid import uuid4
 
 
 @pytest.mark.asyncio
-async def test_delete_menu_success(ac: AsyncClient):
-    data = await DataForTests.init_default_data()
-
-    test_menu_id = data["test_menu_default"].id
+async def test_delete_menu_success(ac: AsyncClient, init_default_data):
+    test_menu_id = init_default_data["test_menu_default"].id
 
     response = await ac.delete(f"api/v1/menus/{test_menu_id}")
 
