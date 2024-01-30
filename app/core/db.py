@@ -10,7 +10,7 @@ engine = create_async_engine(settings.url_for_engine, echo=settings.echo)
 
 if not database_exists(settings.url):
     create_database(settings.url)
-    
+
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
