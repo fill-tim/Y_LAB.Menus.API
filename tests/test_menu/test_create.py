@@ -1,37 +1,40 @@
 from httpx import AsyncClient
-import pytest
+
+from ..helpers.create_url import reverse_url
 
 
-@pytest.mark.asyncio
-async def test_create_menu_success(ac: AsyncClient):
-    response = await ac.post(
-        f"api/v1/menus",
-        json={"title": "My menu 1", "description": "My menu description 1"},
-    )
+class TestCreateMenu:
+    async def test_create_menu_success(self, ac: AsyncClient):
+        url = await reverse_url('create')
 
-    assert response.status_code == 201
-    assert response.json()["id"] != ""
-    assert response.json()["title"] == "My menu 1"
-    assert response.json()["description"] == "My menu description 1"
+        response = await ac.post(
+            url,
+            json={'title': 'My menu 1', 'description': 'My menu description 1'},
+        )
 
+        assert response.status_code == 201
+        assert response.json()['id'] != ''
+        assert response.json()['title'] == 'My menu 1'
+        assert response.json()['description'] == 'My menu description 1'
 
-@pytest.mark.asyncio
-async def test_create_menu_failed_title(ac: AsyncClient):
-    response = await ac.post(
-        f"api/v1/menus",
-        json={"title": 123, "description": "My menu description 1"},
-    )
-    
-    assert response.status_code == 422
-    assert response.json()["detail"][0]["msg"] == "Input should be a valid string"
+    async def test_create_menu_failed_title(self, ac: AsyncClient):
+        url = await reverse_url('create')
 
+        response = await ac.post(
+            url,
+            json={'title': 123, 'description': 'My menu description 1'},
+        )
 
-@pytest.mark.asyncio
-async def test_create_menu_failed_title(ac: AsyncClient):
-    response = await ac.post(
-        f"api/v1/menus",
-        json={"title": "My menu 1", "description": 123},
-    )
-   
-    assert response.status_code == 422
-    assert response.json()["detail"][0]["msg"] == "Input should be a valid string"
+        assert response.status_code == 422
+        assert response.json()['detail'][0]['msg'] == 'Input should be a valid string'
+
+    async def test_create_menu_failed_description(self, ac: AsyncClient):
+        url = await reverse_url('create')
+
+        response = await ac.post(
+            url,
+            json={'title': 'My menu 1', 'description': 123},
+        )
+
+        assert response.status_code == 422
+        assert response.json()['detail'][0]['msg'] == 'Input should be a valid string'

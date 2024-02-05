@@ -1,5 +1,7 @@
-from sqlalchemy import update, delete, select
+from typing import Any
 from uuid import UUID
+
+from sqlalchemy import delete, select, update
 
 
 class BaseRepo:
@@ -10,8 +12,8 @@ class BaseRepo:
     async def get_one(self, id: UUID):
         try:
             obj = await self.db.execute(select(self.model).filter_by(id=id))
-            return obj.scalar()
 
+            return obj.scalar()
         except Exception as error:
             return error
 
@@ -22,9 +24,9 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def create(self, obj_in):
+    async def create(self, **kwargs) -> Any:
         try:
-            obj = self.model(**obj_in.model_dump())
+            obj = self.model(**kwargs['obj_in'].model_dump())
 
             self.db.add(obj)
             await self.db.commit()
@@ -47,7 +49,7 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def delete(self, id: int):
+    async def delete(self, id: UUID):
         try:
             deleted_obj = await self.db.execute(delete(self.model).filter_by(id=id))
             await self.db.commit()

@@ -1,6 +1,28 @@
+from typing import AsyncGenerator
+
 import pytest
-from tests import Menu, Submenu, Dish
-from conftest import async_session_maker
+from httpx import AsyncClient
+from app.models import Dish, Menu, Submenu
+from ..db import engine_test, Base, async_session_maker, override_get_redis
+from ..conftest import app
+
+
+@pytest.fixture(autouse=True)
+async def prepare_database():
+    async with engine_test.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with engine_test.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
+        redis = await override_get_redis()
+        await redis.flushall()
+
+
+@pytest.fixture
+async def ac() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        yield ac
 
 
 @pytest.fixture

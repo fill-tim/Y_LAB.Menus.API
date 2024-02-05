@@ -1,12 +1,13 @@
+from uuid import UUID
+
 from fastapi import Depends
-from app.repositories import BaseRepo
+from sqlalchemy import distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from app.core.db import get_async_session
-from app.models import Menu, Submenu, Dish
-from sqlalchemy.orm import aliased
-from sqlalchemy import distinct, func, select
-from uuid import UUID
+from app.models import Dish, Menu, Submenu
+from app.repositories import BaseRepo
 
 
 class MenuRepo(BaseRepo):
@@ -24,8 +25,8 @@ class MenuRepo(BaseRepo):
                 menu.id,
                 menu.title,
                 menu.description,
-                func.count(distinct(submenu.id)).label("submenu_count"),
-                func.count(distinct(dish.id)).label("dishes_count"),
+                func.count(distinct(submenu.id)).label('submenu_count'),
+                func.count(distinct(dish.id)).label('dishes_count'),
             )
             .outerjoin(
                 submenu,
@@ -50,8 +51,8 @@ class MenuRepo(BaseRepo):
                 menu.id,
                 menu.title,
                 menu.description,
-                func.count(distinct(submenu.id)).label("submenu_count"),
-                func.count(distinct(dish.id)).label("dishes_count"),
+                func.count(distinct(submenu.id)).label('submenu_count'),
+                func.count(distinct(dish.id)).label('dishes_count'),
             )
             .outerjoin(
                 submenu,

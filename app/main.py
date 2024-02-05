@@ -1,12 +1,10 @@
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-from .api import menu_router, submenu_router, dish_router
-from .models import Base
+from .api import dish_router, menu_router, submenu_router
 from .core import engine
-from redis import asyncio as aioredis
-
-from . import models
+from .models import Base
 
 
 @asynccontextmanager
@@ -16,10 +14,6 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(Base.metadata.create_all)
         yield
 
-        # redis = aioredis.from_url(
-        #     "redis://localhost", encoding="utf8", decode_responses=True
-        # )
-        # FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     except Exception as error:
         print(error)
 

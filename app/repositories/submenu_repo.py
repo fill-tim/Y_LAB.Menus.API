@@ -1,14 +1,14 @@
 from uuid import UUID
+
 from fastapi import Depends
-from app.repositories import BaseRepo
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import distinct, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
-from ..schemas.submenu_schemas import SubmenuAdd
+from app.repositories import BaseRepo
 
 from ..core.db import get_async_session
-from ..models import Submenu, Dish
+from ..models import Dish, Submenu
 
 
 class SubmenuRepo(BaseRepo):
@@ -26,7 +26,7 @@ class SubmenuRepo(BaseRepo):
                     submenu.id,
                     submenu.title,
                     submenu.description,
-                    func.count(distinct(dish.id)).label("dishes_count"),
+                    func.count(distinct(dish.id)).label('dishes_count'),
                 )
                 .outerjoin(dish, submenu.id == dish.submenu_id)
                 .where(submenu.id == id)
@@ -48,7 +48,7 @@ class SubmenuRepo(BaseRepo):
                 submenu.id,
                 submenu.title,
                 submenu.description,
-                func.count(distinct(dish.id)).label("dishes_count"),
+                func.count(distinct(dish.id)).label('dishes_count'),
             )
             .outerjoin(dish, submenu.id == dish.submenu_id)
             .group_by(submenu.id)
@@ -60,8 +60,8 @@ class SubmenuRepo(BaseRepo):
 
         return submenus
 
-    async def create(self, submenu_in: SubmenuAdd, menus_id: UUID):
-        obj = Submenu(**submenu_in.model_dump(), menu_id=menus_id)
+    async def create(self, **kwargs):
+        obj = Submenu(**kwargs['submenu_in'].model_dump(), menu_id=kwargs['menus_id'])
 
         self.db.add(obj)
         await self.db.commit()

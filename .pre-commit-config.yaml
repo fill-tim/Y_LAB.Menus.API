@@ -18,13 +18,14 @@ repos:
     hooks:
       - id: isort
         exclude: __init__.py
-        args: [ --profile, black, --filter-files ]
+        args: [ --profile, black, --filter-files, typing ]
 
 # Обновляет синтаксис Python кода в соответствии с последними версиями
 -   repo: https://github.com/asottile/pyupgrade
     rev: v2.31.1
     hooks:
     -   id: pyupgrade
+        known_typing: typing_extensions
         args: [--py310-plus]
 
 # Форматирует код под PEP8
@@ -47,4 +48,5 @@ repos:
     rev: v0.991
     hooks:
     -   id: mypy
+        additional_dependencies: [types-redis==4.6.0.3]
         exclude: 'migrations'

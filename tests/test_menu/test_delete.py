@@ -1,24 +1,27 @@
-from httpx import AsyncClient
-import pytest
-from data.data_for_test import init_default_data
 from uuid import uuid4
 
+from httpx import AsyncClient
 
-@pytest.mark.asyncio
+from ..helpers.create_url import reverse_url
+
+
 async def test_delete_menu_success(ac: AsyncClient, init_default_data):
-    test_menu_id = init_default_data["test_menu_default"].id
+    test_menu_id = init_default_data['test_menu_default'].id
 
-    response = await ac.delete(f"api/v1/menus/{test_menu_id}")
+    url = await reverse_url('delete', id=test_menu_id)
+    
+    response = await ac.delete(url)
 
     assert response.status_code == 200
-    assert response.json() == {"status": True, "message": "The menu has been deleted"}
+    assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
 
-@pytest.mark.asyncio
 async def test_delete_menu_failed(ac: AsyncClient):
     test_menu_id = uuid4()
 
-    response = await ac.delete(f"api/v1/menus/{test_menu_id}")
+    url = await reverse_url('delete', id=test_menu_id)
+
+    response = await ac.delete(url)
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "menu not found"}
+    assert response.json() == {'detail': 'menu not found'}
