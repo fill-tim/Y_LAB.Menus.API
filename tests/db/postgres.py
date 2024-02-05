@@ -1,3 +1,5 @@
+from typing import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
@@ -5,7 +7,6 @@ from sqlalchemy_utils import create_database, database_exists
 
 from app.core.config import settings
 from app.models.base import Base
-from typing import AsyncGenerator
 
 engine_test = create_async_engine(settings.test_url_for_engine, poolclass=NullPool)
 

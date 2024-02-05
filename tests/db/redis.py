@@ -1,11 +1,12 @@
 import os
-from redis.asyncio import Redis
+
 from dotenv import load_dotenv
+from redis.asyncio import Redis
 
 load_dotenv()
 
-TEST_REDIS_PORT = os.getenv("TEST_REDIS_PORT")
-TEST_REDIS_HOST = os.getenv("TEST_REDIS_HOST")
+TEST_REDIS_PORT = os.getenv('TEST_REDIS_PORT')
+TEST_REDIS_HOST = os.getenv('TEST_REDIS_HOST')
 
 
 async def override_get_redis():

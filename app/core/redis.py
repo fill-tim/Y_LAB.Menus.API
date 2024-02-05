@@ -1,11 +1,12 @@
 import os
-from redis.asyncio import Redis
+
 from dotenv import load_dotenv
+from redis.asyncio import Redis
 
 load_dotenv()
 
-REDIS_PORT = os.getenv("REDIS_PORT")
-REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv('REDIS_PORT')
+REDIS_HOST = os.getenv('REDIS_HOST')
 
 
 async def get_redis():

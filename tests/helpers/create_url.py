@@ -1,5 +1,6 @@
-from ..conftest import app
 from uuid import UUID
+
+from ..conftest import app
 
 
 async def reverse_url(name: str, **kwargs: UUID) -> str:

@@ -9,7 +9,7 @@ async def test_list_menus_success(ac: AsyncClient, init_default_data):
     url = await reverse_url('list')
 
     response = await ac.get(url)
-    
+
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert {

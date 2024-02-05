@@ -13,7 +13,7 @@ async def test_update_dish_success(ac: AsyncClient, init_default_data):
     url = await reverse_url(
         'update', menu_id=test_menu_id, submenu_id=test_submenu_id, id=test_dish_id
     )
-    
+
     response = await ac.patch(
         url,
         json={
@@ -21,7 +21,7 @@ async def test_update_dish_success(ac: AsyncClient, init_default_data):
             'description': 'My updated dish description 1',
         },
     )
-    
+
     assert response.status_code == 200
     assert response.json() == {
         'id': str(test_dish_id),

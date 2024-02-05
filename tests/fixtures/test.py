@@ -2,9 +2,11 @@ from typing import AsyncGenerator
 
 import pytest
 from httpx import AsyncClient
+
 from app.models import Dish, Menu, Submenu
-from ..db import engine_test, Base, async_session_maker, override_get_redis
+
 from ..conftest import app
+from ..db import Base, async_session_maker, engine_test, override_get_redis
 
 
 @pytest.fixture(autouse=True)
@@ -21,21 +23,21 @@ async def prepare_database():
 
 @pytest.fixture
 async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(app=app, base_url='http://test') as ac:
         yield ac
 
 
 @pytest.fixture
 async def init_default_data():
     async with async_session_maker() as db:
-        test_menu_default = Menu(title="My menu 1", description="My menu description 1")
+        test_menu_default = Menu(title='My menu 1', description='My menu description 1')
 
         db.add(test_menu_default)
         await db.commit()
 
         test_submenu_default = Submenu(
-            title="My submenu 1",
-            description="My submenu description 1",
+            title='My submenu 1',
+            description='My submenu description 1',
             menu_id=test_menu_default.id,
         )
 
@@ -43,9 +45,9 @@ async def init_default_data():
         await db.commit()
 
         test_dish_default = Dish(
-            title="My dish 1",
-            description="My dish description 1",
-            price="123.12",
+            title='My dish 1',
+            description='My dish description 1',
+            price='123.12',
             submenu_id=test_submenu_default.id,
         )
 
@@ -53,7 +55,7 @@ async def init_default_data():
         await db.commit()
 
         return {
-            "test_menu_default": test_menu_default,
-            "test_submenu_default": test_submenu_default,
-            "test_dish_default": test_dish_default,
+            'test_menu_default': test_menu_default,
+            'test_submenu_default': test_submenu_default,
+            'test_dish_default': test_dish_default,
         }
