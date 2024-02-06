@@ -35,3 +35,7 @@ class MenuResponse(Menu):
 
 class UpdatedMenu(MenuResponse):
     pass
+
+
+class MenuErrors(BaseModel):
+    detail: str

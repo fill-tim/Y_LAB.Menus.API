@@ -17,14 +17,14 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def get_all(self):
+    async def get_all(self) -> list | Any:
         try:
             objs = await self.db.execute(select(self.model))
             return list(objs.scalars())
         except Exception as error:
             return error
 
-    async def create(self, **kwargs) -> Any:
+    async def create(self, **kwargs):
         try:
             obj = self.model(**kwargs['obj_in'].model_dump())
 
@@ -36,7 +36,7 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def update(self, obj_upd, id):
+    async def update(self, obj_upd, id: UUID):
         try:
             updated_obj = await self.db.execute(
                 update(self.model)

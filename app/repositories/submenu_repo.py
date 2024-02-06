@@ -39,7 +39,7 @@ class SubmenuRepo(BaseRepo):
         except Exception as error:
             return error
 
-    async def get_all(self, menus_id):
+    async def get_all(self, **kwargs) -> list:
         submenu = aliased(Submenu)
         dish = aliased(Dish)
 
@@ -52,7 +52,7 @@ class SubmenuRepo(BaseRepo):
             )
             .outerjoin(dish, submenu.id == dish.submenu_id)
             .group_by(submenu.id)
-            .where(submenu.menu_id == menus_id)
+            .where(submenu.menu_id == kwargs['menu_id'])
         )
 
         result = await self.db.execute(query)
@@ -60,7 +60,7 @@ class SubmenuRepo(BaseRepo):
 
         return submenus
 
-    async def create(self, **kwargs):
+    async def create(self, **kwargs) -> Submenu:
         obj = Submenu(**kwargs['submenu_in'].model_dump(), menu_id=kwargs['menus_id'])
 
         self.db.add(obj)

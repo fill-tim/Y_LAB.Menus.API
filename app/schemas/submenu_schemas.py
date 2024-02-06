@@ -34,3 +34,7 @@ class CreatedSubmenu(Submenu):
 
 class UpdatedSubmenu(SubmenuResponse):
     pass
+
+
+class SubmenuErrors(BaseModel):
+    detail: str

@@ -6,24 +6,30 @@ from ...schemas.submenu_schemas import (
     CreatedSubmenu,
     DeletedSubmenu,
     SubmenuAdd,
+    SubmenuErrors,
     SubmenuResponse,
     SubmenuUpdate,
     UpdatedSubmenu,
 )
 from ...services.submenu_service import SubmenuService
 
-submenu_router = APIRouter(prefix='/api/v1/menus/{menu_id}', tags=['submenus'])
+submenu_router = APIRouter(
+    prefix='/api/v1/menus/{menu_id}',
+    tags=['submenus'],
+    responses={400: {'model': SubmenuErrors}},
+)
 
 
 @submenu_router.get('/submenus', response_model=list[SubmenuResponse])
-async def list(
-    menu_id: UUID,
-    submenu_service: SubmenuService = Depends(),
-):
+async def list(menu_id: UUID, submenu_service: SubmenuService = Depends()):
     return await submenu_service.get_all_submenus(menu_id=menu_id)
 
 
-@submenu_router.get('/submenus/{id}', response_model=SubmenuResponse)
+@submenu_router.get(
+    '/submenus/{id}',
+    response_model=SubmenuResponse,
+    responses={404: {'model': SubmenuErrors}},
+)
 async def get(id: UUID, menu_id: UUID, submenu_service: SubmenuService = Depends()):
     return await submenu_service.get_one_submenu(id=id)
 

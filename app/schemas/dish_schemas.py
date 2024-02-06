@@ -35,3 +35,7 @@ class CreatedDish(Dish):
 
 class UpdatedDish(DishUpdate):
     id: UUID
+
+
+class DishErrors(BaseModel):
+    detail: str

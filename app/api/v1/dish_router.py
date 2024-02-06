@@ -6,6 +6,7 @@ from ...schemas.dish_schemas import (
     CreatedDish,
     DeletedDish,
     DishAdd,
+    DishErrors,
     DishResponse,
     DishUpdate,
     UpdatedDish,
@@ -13,7 +14,9 @@ from ...schemas.dish_schemas import (
 from ...services.dish_service import DishService
 
 dish_router = APIRouter(
-    prefix='/api/v1/menus/{menu_id}/submenus/{submenu_id}', tags=['dishes']
+    prefix='/api/v1/menus/{menu_id}/submenus/{submenu_id}',
+    tags=['dishes'],
+    responses={400: {'model': DishErrors}},
 )
 
 
@@ -26,7 +29,11 @@ async def list(
     return await dish_service.get_all_dishes(submenu_id=submenu_id, menu_id=menu_id)
 
 
-@dish_router.get('/dishes/{id}', response_model=DishResponse)
+@dish_router.get(
+    '/dishes/{id}',
+    response_model=DishResponse,
+    responses={404: {'model': DishErrors}},
+)
 async def get(id: UUID, dish_service: DishService = Depends()):
     return await dish_service.get_one_dish(id=id)
 

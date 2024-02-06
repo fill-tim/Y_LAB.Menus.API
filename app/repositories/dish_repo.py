@@ -1,5 +1,3 @@
-from typing import Any
-
 from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,14 +11,14 @@ class DishRepo(BaseRepo):
     def __init__(self, db: AsyncSession = Depends(get_async_session)):
         super().__init__(model=Dish, db=db)
 
-    async def get_all(self, **kwargs) -> list[Dish]:
+    async def get_all(self, **kwargs) -> list:
         dishes = await self.db.execute(
             select(Dish).where(Dish.submenu_id == kwargs['submenu_id'])
         )
 
         return list(dishes.scalars())
 
-    async def create(self, **kwargs) -> Any:
+    async def create(self, **kwargs) -> Dish:
         price = round(float(kwargs['dish_in'].price), 2)
         kwargs['dish_in'].price = str(price)
 

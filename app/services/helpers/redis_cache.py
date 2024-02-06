@@ -8,13 +8,12 @@ from ...core import get_redis
 
 
 class RedisCache:
-    def __init__(self, rd: Redis = Depends(get_redis)):
+    def __init__(self, rd: Redis = Depends(get_redis)) -> None:
         self._rd = rd
 
-    async def get_value(self, tag: UUID | str):
+    async def get_value(self, tag: UUID | str) -> bytes | None:
         try:
-
-            key = await self._rd.scan(match=str(tag) + '*')
+            key = await self._rd.scan(match=f"{tag}*")
 
             if key[1] == []:
                 return None
@@ -32,11 +31,11 @@ class RedisCache:
     ):
         try:
             if tags:
-                tags_str = '{' + ','.join(str(x) for x in tags) + '}'
+                tags_str = "{" + ",".join(str(x) for x in tags) + "}"
             else:
-                tags_str = ''
+                tags_str = ""
 
-            await self._rd.set(f'{str(key)}' + f'{tags_str}', str(value))
+            await self._rd.set(f"{str(key)}" + f"{tags_str}", str(value))
 
         except Exception as error:
             print(error)
@@ -45,17 +44,17 @@ class RedisCache:
         try:
             if tags:
                 for tag in tags:
-                    caches = await self._rd.scan(match=f'*{tag}*')
+                    caches = await self._rd.scan(match=f"*{tag}*")
 
                     if caches[1] is not []:
                         for key in caches[1]:
-                            await self._rd.delete(key.decode('utf-8'))
+                            await self._rd.delete(key.decode("utf-8"))
 
         except Exception as error:
             print(error)
 
-    async def convert_to_json(self, cache):
+    async def convert_to_json(self, cache: bytes):
         try:
-            return json.loads(cache.decode('utf-8').replace("'", '"'))
+            return json.loads(cache.decode("utf-8").replace("'", '"'))
         except Exception as error:
             print(error)

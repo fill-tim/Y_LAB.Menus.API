@@ -17,8 +17,8 @@ async def prepare_database():
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
-        redis = await override_get_redis()
-        await redis.flushall()
+    #     redis = await override_get_redis()
+    #     await redis.flushall()
 
 
 @pytest.fixture

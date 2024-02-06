@@ -6,13 +6,18 @@ from ...schemas.menu_schemas import (
     CreatedMenu,
     DeletedMenu,
     MenuAdd,
+    MenuErrors,
     MenuResponse,
     MenuUpdate,
     UpdatedMenu,
 )
 from ...services.menu_service import MenuService
 
-menu_router = APIRouter(prefix='/api/v1', tags=['menus'])
+menu_router = APIRouter(
+    prefix='/api/v1',
+    tags=['menus'],
+    responses={400: {'model': MenuErrors}},
+)
 
 
 @menu_router.get('/menus', response_model=list[MenuResponse])
@@ -20,7 +25,11 @@ async def list(menu_service: MenuService = Depends()):
     return await menu_service.get_all_menus()
 
 
-@menu_router.get('/menus/{id}', response_model=MenuResponse)
+@menu_router.get(
+    '/menus/{id}',
+    response_model=MenuResponse,
+    responses={404: {'model': MenuErrors}},
+)
 async def get(id: UUID, menu_service: MenuService = Depends()):
     return await menu_service.get_one_menu(id=id)
 
