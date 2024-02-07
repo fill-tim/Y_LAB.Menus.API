@@ -5,10 +5,10 @@ from httpx import AsyncClient
 from ..helpers.create_url import reverse_url
 
 
-async def test_delete_menu_success(ac: AsyncClient, init_default_data):
+async def test_delete_menu_success(ac: AsyncClient, init_default_data) -> None:
     test_menu_id = init_default_data['test_menu_default'].id
 
-    url = await reverse_url('delete', id=test_menu_id)
+    url = await reverse_url('delete_menu', menu_id=test_menu_id)
 
     response = await ac.delete(url)
 
@@ -16,10 +16,10 @@ async def test_delete_menu_success(ac: AsyncClient, init_default_data):
     assert response.json() == {'status': True, 'message': 'The menu has been deleted'}
 
 
-async def test_delete_menu_failed(ac: AsyncClient):
+async def test_delete_menu_failed(ac: AsyncClient) -> None:
     test_menu_id = uuid4()
 
-    url = await reverse_url('delete', id=test_menu_id)
+    url = await reverse_url('delete_menu', menu_id=test_menu_id)
 
     response = await ac.delete(url)
 

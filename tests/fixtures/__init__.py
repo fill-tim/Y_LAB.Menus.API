@@ -1,1 +1,1 @@
-from .test import init_default_data, ac, prepare_database
+from .fixture import init_default_data, ac, prepare_database

@@ -9,7 +9,7 @@ class BaseRepo:
         self.model = model
         self.db = db
 
-    async def get_one(self, id: UUID):
+    async def get_one(self, id: UUID) -> Any | Exception:
         try:
             obj = await self.db.execute(select(self.model).filter_by(id=id))
 
@@ -24,7 +24,7 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def create(self, **kwargs):
+    async def create(self, **kwargs) -> Any | Exception:
         try:
             obj = self.model(**kwargs['obj_in'].model_dump())
 
@@ -36,7 +36,7 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def update(self, obj_upd, id: UUID):
+    async def update(self, obj_upd, id: UUID) -> Any | Exception:
         try:
             updated_obj = await self.db.execute(
                 update(self.model)
@@ -49,7 +49,7 @@ class BaseRepo:
         except Exception as error:
             return error
 
-    async def delete(self, id: UUID):
+    async def delete(self, id: UUID) -> Any | Exception:
         try:
             deleted_obj = await self.db.execute(delete(self.model).filter_by(id=id))
             await self.db.commit()

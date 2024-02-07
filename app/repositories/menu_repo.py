@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import distinct, func, select
+from sqlalchemy import Row, Sequence, distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
@@ -11,11 +11,11 @@ from app.repositories import BaseRepo
 
 
 class MenuRepo(BaseRepo):
-    def __init__(self, db: AsyncSession = Depends(get_async_session)):
+    def __init__(self, db: AsyncSession = Depends(get_async_session)) -> None:
         self.db = db
         super().__init__(model=Menu, db=self.db)
 
-    async def get_one(self, id: UUID):
+    async def get_one(self, id: UUID) -> Row[tuple[str, UUID]]:
         menu = aliased(Menu)
         submenu = aliased(Submenu)
         dish = aliased(Dish)
@@ -41,7 +41,7 @@ class MenuRepo(BaseRepo):
 
         return menu.first()
 
-    async def get_all(self):
+    async def get_all(self) -> Sequence[Row[str, UUID]]:
         menu = aliased(Menu)
         submenu = aliased(Submenu)
         dish = aliased(Dish)

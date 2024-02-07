@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.responses import JSONResponse
 
 from ..repositories import DishRepo
-from ..schemas.dish_schemas import DishAdd, DishUpdate
+from ..schemas.dish_schemas import Dish, DishAdd, DishUpdate
 from .helpers.redis_cache import RedisCache
 
 
@@ -15,88 +15,90 @@ class DishService:
         self._dish_repo = dish_repo
         self._redis_cache = redis_cache
 
-    async def get_one_dish(self, id: UUID) -> dict[str, int] | JSONResponse:
+    async def get_one_dish(self, dish_id: UUID) -> dict | JSONResponse:
         try:
-            cache = await self._redis_cache.get_value(str(id))
+            cache: bytes = await self._redis_cache.get_value(str(dish_id))
 
             if cache:
                 return await self._redis_cache.convert_to_json(cache)
             else:
-                dish = await self._dish_repo.get_one(id)
+                dish: any = await self._dish_repo.get_one(dish_id)
 
                 if not dish:
                     return JSONResponse(
                         status_code=404,
-                        content={"detail": "dish not found"},
+                        content={'detail': 'dish not found'},
                     )
 
-                response = {
-                    "id": dish.id,
-                    "title": dish.title,
-                    "description": dish.description,
-                    "price": dish.price,
+                response: dict = {
+                    'id': dish.id,
+                    'title': dish.title,
+                    'description': dish.description,
+                    'price': dish.price,
                 }
 
                 await self._redis_cache.set_value(
-                    key=str(id),
+                    key=str(dish_id),
                     value=str(response),
-                    tags=[str(id)],
+                    tags=[str(dish_id)],
                 )
 
                 return response
         except Exception as error:
             return JSONResponse(
                 status_code=400,
-                content={"detail": f"{error}"},
+                content={'detail': f'{error}'},
             )
 
     async def get_all_dishes(
         self, submenu_id: UUID, menu_id: UUID
-    ) -> list[dict[str, int]] | JSONResponse:
+    ) -> list[dict] | JSONResponse:
         try:
-            cache = await self._redis_cache.get_value(f"submenu/{submenu_id}")
+            cache: bytes = await self._redis_cache.get_value(f'submenu/{submenu_id}')
 
             if cache is not None:
                 return await self._redis_cache.convert_to_json(cache)
             else:
-                dishes = await self._dish_repo.get_all(submenu_id=submenu_id)
+                dishes: list = await self._dish_repo.get_all(submenu_id=submenu_id)
 
-                response = []
+                response: list = []
 
                 for dish in dishes:
                     response.append(
                         {
-                            "id": str(dish.id),
-                            "title": dish.title,
-                            "description": dish.description,
-                            "price": dish.price,
+                            'id': str(dish.id),
+                            'title': dish.title,
+                            'description': dish.description,
+                            'price': dish.price,
                         }
                     )
 
                 await self._redis_cache.set_value(
-                    key=f"submenu/{submenu_id}",
+                    key=f'submenu/{submenu_id}',
                     value=str(response),
-                    tags=[f"submenu/{submenu_id}", f"menu/{menu_id}"],
+                    tags=[f'submenu/{submenu_id}', f'menu/{menu_id}'],
                 )
 
                 return response
         except Exception as error:
             return JSONResponse(
                 status_code=400,
-                content={"detail": f"{error}"},
+                content={'detail': f'{error}'},
             )
 
     async def create_dish(
         self, dish_in: DishAdd, submenu_id: UUID, menu_id: UUID
-    ) -> dict[str, int] | JSONResponse:
+    ) -> dict | JSONResponse:
         try:
-            dish = await self._dish_repo.create(dish_in=dish_in, submenu_id=submenu_id)
+            dish: Dish = await self._dish_repo.create(
+                dish_in=dish_in, submenu_id=submenu_id
+            )
 
             await self._redis_cache.del_cache(
                 tags=[
-                    "Menus",
-                    f"menu/{menu_id}",
-                    f"submenu/{submenu_id}",
+                    'Menus',
+                    f'menu/{menu_id}',
+                    f'submenu/{submenu_id}',
                     str(menu_id),
                     str(submenu_id),
                 ]
@@ -106,56 +108,60 @@ class DishService:
         except Exception as error:
             return JSONResponse(
                 status_code=400,
-                content={"detail": f"{error}"},
+                content={'detail': f'{error}'},
             )
 
-    async def delete_dish(self, id: UUID, submenu_id: UUID, menu_id: UUID):
+    async def delete_dish(
+        self, dish_id: UUID, submenu_id: UUID, menu_id: UUID
+    ) -> dict[str, bool] | JSONResponse:
         try:
-            response = await self._dish_repo.delete(id)
+            response: any = await self._dish_repo.delete(dish_id)
 
             if response.rowcount == 0:
                 return JSONResponse(
                     status_code=404,
-                    content={"detail": "dish not found"},
+                    content={'detail': 'dish not found'},
                 )
 
             await self._redis_cache.del_cache(
                 tags=[
-                    "Menus",
-                    f"menu/{menu_id}",
-                    f"submenu/{submenu_id}",
-                    str(id),
+                    'Menus',
+                    f'menu/{menu_id}',
+                    f'submenu/{submenu_id}',
+                    str(dish_id),
                     str(menu_id),
                     str(submenu_id),
                 ],
             )
 
-            return {"status": True, "message": "The dish has been deleted"}
+            return {'status': True, 'message': 'The dish has been deleted'}
         except Exception as error:
             return JSONResponse(
                 status_code=400,
-                content={"detail": f"{error}"},
+                content={'detail': f'{error}'},
             )
 
-    async def update_dish(self, dish_upd: DishUpdate, id: UUID, submenu_id: UUID):
+    async def update_dish(
+        self, dish_upd: DishUpdate, dish_id: UUID, submenu_id: UUID
+    ) -> dict | JSONResponse:
         try:
-            dish_upd = await self._dish_repo.update(dish_upd, id)
+            upd_dish: any = await self._dish_repo.update(dish_upd, dish_id)
 
-            if dish_upd.rowcount == 0:
+            if upd_dish.rowcount == 0:
                 return JSONResponse(
                     status_code=404,
-                    content={"detail": "dish not found"},
+                    content={'detail': 'dish not found'},
                 )
 
-            dish = await self._dish_repo.get_one(id)
+            dish: any = await self._dish_repo.get_one(dish_id)
 
             await self._redis_cache.del_cache(
-                tags=[f"submenu/{submenu_id}", str(id)],
+                tags=[f'submenu/{submenu_id}', str(dish_id)],
             )
 
             return dish
         except Exception as error:
             return JSONResponse(
                 status_code=400,
-                content={"detail": f"{error}"},
+                content={'detail': f'{error}'},
             )

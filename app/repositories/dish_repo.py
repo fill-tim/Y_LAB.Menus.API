@@ -8,7 +8,7 @@ from app.repositories import BaseRepo
 
 
 class DishRepo(BaseRepo):
-    def __init__(self, db: AsyncSession = Depends(get_async_session)):
+    def __init__(self, db: AsyncSession = Depends(get_async_session)) -> None:
         super().__init__(model=Dish, db=db)
 
     async def get_all(self, **kwargs) -> list:

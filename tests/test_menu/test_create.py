@@ -4,8 +4,8 @@ from ..helpers.create_url import reverse_url
 
 
 class TestCreateMenu:
-    async def test_create_menu_success(self, ac: AsyncClient):
-        url = await reverse_url('create')
+    async def test_create_menu_success(self, ac: AsyncClient) -> None:
+        url = await reverse_url('create_menu')
 
         response = await ac.post(
             url,
@@ -17,8 +17,8 @@ class TestCreateMenu:
         assert response.json()['title'] == 'My menu 1'
         assert response.json()['description'] == 'My menu description 1'
 
-    async def test_create_menu_failed_title(self, ac: AsyncClient):
-        url = await reverse_url('create')
+    async def test_create_menu_failed_title(self, ac: AsyncClient) -> None:
+        url = await reverse_url('create_menu')
 
         response = await ac.post(
             url,
@@ -28,8 +28,8 @@ class TestCreateMenu:
         assert response.status_code == 422
         assert response.json()['detail'][0]['msg'] == 'Input should be a valid string'
 
-    async def test_create_menu_failed_description(self, ac: AsyncClient):
-        url = await reverse_url('create')
+    async def test_create_menu_failed_description(self, ac: AsyncClient) -> None:
+        url = await reverse_url('create_menu')
 
         response = await ac.post(
             url,

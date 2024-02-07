@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
@@ -28,7 +29,7 @@ class RedisCache:
         key: str,
         value: str,
         tags: list | None = None,
-    ):
+    ) -> None:
         try:
             if tags:
                 tags_str = "{" + ",".join(str(x) for x in tags) + "}"
@@ -40,7 +41,7 @@ class RedisCache:
         except Exception as error:
             print(error)
 
-    async def del_cache(self, tags: list):
+    async def del_cache(self, tags: list) -> None:
         try:
             if tags:
                 for tag in tags:
@@ -53,7 +54,7 @@ class RedisCache:
         except Exception as error:
             print(error)
 
-    async def convert_to_json(self, cache: bytes):
+    async def convert_to_json(self, cache: bytes) -> Any | None:
         try:
             return json.loads(cache.decode("utf-8").replace("'", '"'))
         except Exception as error:

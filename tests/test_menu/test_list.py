@@ -3,10 +3,10 @@ from httpx import AsyncClient
 from ..helpers.create_url import reverse_url
 
 
-async def test_list_menus_success(ac: AsyncClient, init_default_data):
+async def test_list_menus_success(ac: AsyncClient, init_default_data) -> None:
     test_menu_id = init_default_data['test_menu_default'].id
 
-    url = await reverse_url('list')
+    url = await reverse_url('list_menu')
 
     response = await ac.get(url)
 

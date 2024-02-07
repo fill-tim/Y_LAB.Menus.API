@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy import distinct, func, select
+from sqlalchemy import Row, Sequence, distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
@@ -12,11 +12,11 @@ from ..models import Dish, Submenu
 
 
 class SubmenuRepo(BaseRepo):
-    def __init__(self, db: AsyncSession = Depends(get_async_session)):
+    def __init__(self, db: AsyncSession = Depends(get_async_session)) -> None:
         self.db = db
         super().__init__(model=Submenu, db=self.db)
 
-    async def get_one(self, id: UUID):
+    async def get_one(self, id: UUID) -> Row[tuple[UUID, str, int]]:
         try:
             submenu = aliased(Submenu)
             dish = aliased(Dish)
@@ -39,7 +39,7 @@ class SubmenuRepo(BaseRepo):
         except Exception as error:
             return error
 
-    async def get_all(self, **kwargs) -> list:
+    async def get_all(self, **kwargs) -> Sequence[Row[tuple[UUID, str, int]]]:
         submenu = aliased(Submenu)
         dish = aliased(Dish)
 

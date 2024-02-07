@@ -9,7 +9,7 @@ REDIS_PORT = os.getenv('REDIS_PORT')
 REDIS_HOST = os.getenv('REDIS_HOST')
 
 
-async def get_redis():
+async def get_redis() -> Redis:
     try:
         redis = await Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
         return redis
