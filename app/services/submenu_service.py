@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
@@ -22,7 +23,7 @@ class SubmenuService:
     ) -> dict[str, int] | JSONResponse:
         try:
 
-            cache: bytes = await self._redis_cache.get_value(str(submenu_id))
+            cache: bytes | None = await self._redis_cache.get_value(str(submenu_id))
 
             if cache is not None:
                 return await self._redis_cache.convert_to_json(cache)
@@ -59,7 +60,7 @@ class SubmenuService:
         self, menu_id: UUID
     ) -> list[dict[str, int]] | JSONResponse:
         try:
-            cache: bytes = await self._redis_cache.get_value(
+            cache: bytes | None = await self._redis_cache.get_value(
                 f'get_all_submenus{menu_id}'
             )
 
@@ -118,7 +119,7 @@ class SubmenuService:
         self, submenu_id: UUID, menu_id: UUID
     ) -> dict[str, bool] | JSONResponse:
         try:
-            response: any = await self._submenu_repo.delete(submenu_id)
+            response: Any = await self._submenu_repo.delete(submenu_id)
 
             if response.rowcount == 0:
                 return JSONResponse(
@@ -146,7 +147,7 @@ class SubmenuService:
         self, submenu_upd: SubmenuUpdate, submenu_id: UUID, menu_id: UUID
     ) -> dict[str, int] | JSONResponse:
         try:
-            upd_submenu: any = await self._submenu_repo.update(submenu_upd, submenu_id)
+            upd_submenu: Any = await self._submenu_repo.update(submenu_upd, submenu_id)
 
             if upd_submenu.rowcount == 0:
                 return JSONResponse(

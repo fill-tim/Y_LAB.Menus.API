@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
@@ -17,12 +18,12 @@ class DishService:
 
     async def get_one_dish(self, dish_id: UUID) -> dict | JSONResponse:
         try:
-            cache: bytes = await self._redis_cache.get_value(str(dish_id))
+            cache: bytes | None = await self._redis_cache.get_value(str(dish_id))
 
             if cache:
                 return await self._redis_cache.convert_to_json(cache)
             else:
-                dish: any = await self._dish_repo.get_one(dish_id)
+                dish: Any = await self._dish_repo.get_one(dish_id)
 
                 if not dish:
                     return JSONResponse(
@@ -54,7 +55,7 @@ class DishService:
         self, submenu_id: UUID, menu_id: UUID
     ) -> list[dict] | JSONResponse:
         try:
-            cache: bytes = await self._redis_cache.get_value(f'submenu/{submenu_id}')
+            cache: bytes | None = await self._redis_cache.get_value(f'submenu/{submenu_id}')
 
             if cache is not None:
                 return await self._redis_cache.convert_to_json(cache)
@@ -115,7 +116,7 @@ class DishService:
         self, dish_id: UUID, submenu_id: UUID, menu_id: UUID
     ) -> dict[str, bool] | JSONResponse:
         try:
-            response: any = await self._dish_repo.delete(dish_id)
+            response: Any = await self._dish_repo.delete(dish_id)
 
             if response.rowcount == 0:
                 return JSONResponse(
@@ -145,7 +146,7 @@ class DishService:
         self, dish_upd: DishUpdate, dish_id: UUID, submenu_id: UUID
     ) -> dict | JSONResponse:
         try:
-            upd_dish: any = await self._dish_repo.update(dish_upd, dish_id)
+            upd_dish: Any = await self._dish_repo.update(dish_upd, dish_id)
 
             if upd_dish.rowcount == 0:
                 return JSONResponse(
@@ -153,7 +154,7 @@ class DishService:
                     content={'detail': 'dish not found'},
                 )
 
-            dish: any = await self._dish_repo.get_one(dish_id)
+            dish: Any = await self._dish_repo.get_one(dish_id)
 
             await self._redis_cache.del_cache(
                 tags=[f'submenu/{submenu_id}', str(dish_id)],

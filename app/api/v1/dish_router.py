@@ -15,13 +15,13 @@ from ...schemas.dish_schemas import (
 from ...services.dish_service import DishService
 
 dish_router = APIRouter(
-    prefix="/api/v1/menus/{menu_id}/submenus/{submenu_id}",
-    tags=["dishes"],
-    responses={400: {"model": DishErrors}},
+    prefix='/api/v1/menus/{menu_id}/submenus/{submenu_id}',
+    tags=['dishes'],
+    responses={400: {'model': DishErrors}},
 )
 
 
-@dish_router.get("/dishes", response_model=list[DishResponse])
+@dish_router.get('/dishes', response_model=list[DishResponse])
 async def list_dish(
     menu_id: UUID,
     submenu_id: UUID,
@@ -31,9 +31,9 @@ async def list_dish(
 
 
 @dish_router.get(
-    "/dishes/{dish_id}",
+    '/dishes/{dish_id}',
     response_model=DishResponse,
-    responses={404: {"model": DishErrors}},
+    responses={404: {'model': DishErrors}},
 )
 async def get_dish(
     dish_id: UUID, dish_service: DishService = Depends()
@@ -41,7 +41,7 @@ async def get_dish(
     return await dish_service.get_one_dish(dish_id=dish_id)
 
 
-@dish_router.post("/dishes", status_code=201, response_model=CreatedDish)
+@dish_router.post('/dishes', status_code=201, response_model=CreatedDish)
 async def create_dish(
     submenu_id: UUID,
     menu_id: UUID,
@@ -53,7 +53,7 @@ async def create_dish(
     )
 
 
-@dish_router.delete("/dishes/{dish_id}", response_model=DeletedDish)
+@dish_router.delete('/dishes/{dish_id}', response_model=DeletedDish)
 async def delete_dish(
     dish_id: UUID,
     menu_id: UUID,
@@ -65,7 +65,7 @@ async def delete_dish(
     )
 
 
-@dish_router.patch("/dishes/{dish_id}", response_model=UpdatedDish)
+@dish_router.patch('/dishes/{dish_id}', response_model=UpdatedDish)
 async def update_dish(
     dish_id: UUID,
     submenu_id: UUID,

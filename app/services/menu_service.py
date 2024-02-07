@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends
@@ -18,7 +19,7 @@ class MenuService:
 
     async def get_one_menu(self, menu_id: UUID) -> dict[str, int] | JSONResponse:
         try:
-            cache: bytes = await self._redis_cache.get_value(str(menu_id))
+            cache: bytes | None = await self._redis_cache.get_value(str(menu_id))
 
             if cache is not None:
                 return await self._redis_cache.convert_to_json(cache)
@@ -52,7 +53,7 @@ class MenuService:
 
     async def get_all_menus(self) -> list[dict[str, int]] | JSONResponse:
         try:
-            cache: bytes = await self._redis_cache.get_value('Menus')
+            cache: bytes | None = await self._redis_cache.get_value('Menus')
 
             if cache:
                 return await self._redis_cache.convert_to_json(cache)
@@ -87,7 +88,7 @@ class MenuService:
 
     async def create_menu(self, menu_in: MenuAdd) -> dict | JSONResponse:
         try:
-            menu: any = await self._menu_repo.create(obj_in=menu_in)
+            menu: Any = await self._menu_repo.create(obj_in=menu_in)
 
             await self._redis_cache.del_cache(['Menus'])
 
@@ -100,7 +101,7 @@ class MenuService:
 
     async def delete_menu(self, menu_id: UUID) -> dict[str, bool] | JSONResponse:
         try:
-            response: any = await self._menu_repo.delete(menu_id)
+            response: Any = await self._menu_repo.delete(menu_id)
 
             if response.rowcount == 0:
                 return JSONResponse(
@@ -123,9 +124,9 @@ class MenuService:
         self, menu_upd: MenuUpdate, menu_id: UUID
     ) -> dict[str, int] | JSONResponse:
         try:
-            menu_upd: any = await self._menu_repo.update(menu_upd, menu_id)
+            upd_menu: Any = await self._menu_repo.update(menu_upd, menu_id)
 
-            if menu_upd.rowcount == 0:
+            if upd_menu.rowcount == 0:
                 return JSONResponse(
                     status_code=404,
                     content={'detail': 'menu not found'},
